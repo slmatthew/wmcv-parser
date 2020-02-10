@@ -61,7 +61,7 @@ class WmParser {
 			];
 		}
 
-		if(preg_match('/<td style="background-color:#8ACA2B; color:white"><div class="number-table">(.*)<\/div> \(<strong>(.*)%<\/strong> of cases with outcome\) <\/td>/i', $html, $m)) {
+		if(preg_match('/<td>Recovered\/Discharged<\/td> <\/tr> <tr> <td style="background-color:#8ACA2B; color:white"><div class="number-table">(.*)<\/div> \(<strong>(.*)%<\/strong> of cases with outcome\) <\/td> <\/tr><\/table><\/div><div class="visible-xs" style="margin-top:20px;"><\/div><div class="table-responsive" style="font-size:16px; margin: auto; width:100%; text-align:center"> <table class="table table-striped table-bordered" cellspacing="0"> <tr> <td>Deaths<\/td>/i', $html, $m)) {
 			$data['recovered'] = [
 				'count' => (int)str_replace(',', '', $m[1]),
 				'percent' => (int)str_replace(',', '', $m[2])
