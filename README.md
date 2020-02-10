@@ -12,11 +12,13 @@ $parser = new WmParser();
 ```
 
 ### getCases
-Получение количества инфицированных, в тяжелом состоянии, умерших и выздоровевших. Возвращает ассоциативный массив с полями `infected`, `critical`, `death`, `recovered`. Все значения числовые. Если значение равно `-1`, значит эти данные не удалось получить.
+Получение статистики действия на людей. Возвращает ассоциативный массив с полями `total`, `currently`, `outcome`, `mild`, `critical`, `death`, `recovered`. Четыре последних — `mild`, `critical`, `death` и `recovered` — сами являются ассоциативными массивами с полями `count` и `percent`.
+
+Все значения числовые. Если значение равно `0`, значит эти данные не удалось получить.
 
 ```php
 $cases = $parser->getCases();
-echo "Инфицировано: {$cases['infected']}";
+echo "Инфицировано: {$cases['currently']}";
 ```
 
 ### getCountries
@@ -36,11 +38,13 @@ $parser = new WmParser();
 ```
 
 ### getCases
-Get count of infected, critical, death and recovered cases. Returns associative array with this fields: `infected`, `critical`, `death`, `recovered`. Every value is integer. If value == `-1` this value have not been got.
+The statistics of the actions on people. Returns associative array with this fields: `total`, `currently`, `outcome`, `mild`, `critical`, `death`, `recovered`. Last 4 values are associative arrays with `count` and `percent` fields.
+
+Every value is integer. If value == `0` this value have not been got.
 
 ```php
 $cases = $parser->getCases();
-echo "Infected people: {$cases['infected']}";
+echo "Infected people: {$cases['currently']}";
 ```
 
 ### getCountries

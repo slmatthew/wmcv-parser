@@ -6,27 +6,71 @@ class WmParser {
 
 		$html = file_get_contents('https://www.worldometers.info/coronavirus/');
 		if(preg_match('/<div class="maincounter-number"> <span style="color:#aaa">(.*)<\/span><\/div>/i', $html, $m)) {
-			$data['infected'] = (int)str_replace(',', '', $m[1]);
+			$count = str_replace(',', '', $m[1]);
+
+			$data['total'] = (int)$count;
 		} else {
-			$data['infected'] = -1;
+			$data['total'] = 0;
 		}
 
-		if(preg_match('/of which <span style="font-size:22px; font-weight:bold; color:red">(.*)<\/span> <br> in <strong>severe condition<\/strong>/i', $html, $m)) {
-			$data['critical'] = (int)str_replace(',', '', $m[1]);
+		if(preg_match('/<td><strong>Currently Infected<\/strong> <br><\/td> <\/tr> <tr> <td><div class="number-table-main">(.*)<\/div> <\/td>/i', $html, $m)) {
+			$data['currently'] = (int)str_replace(',', '', $m[1]);
 		} else {
-			$data['critical'] = -1;
+			$data['currently'] = 0;
 		}
 
-		if(preg_match('/<h1>Deaths:<\/h1> <div class="maincounter-number"> <span>(.*)<\/span> <\/div><\/div> <div id="maincounter-wrap" style="margin-top:15px;">/i', $html, $m)) {
-			$data['death'] = (int)$m[1];
+		if(preg_match('/<td><strong>Cases with Outcome<\/strong><\/td> <\/tr> <tr> <td><div class="number-table-main">(.*)<\/div><\/td>/i', $html, $m)) {
+			$data['outcome'] = (int)str_replace(',', '', $m[1]);
 		} else {
-			$data['death'] = -1;
+			$data['outcome'] = 0;
 		}
 
-		if(preg_match('/<h1>Recovered:<\/h1> <div class="maincounter-number" style="color:#8ACA2B "> <span>(.*)<\/span>/i', $html, $m)) {
-			$data['recovered'] = (int)str_replace(',', '', $m[1]);
+		if(preg_match('/<td style="background-color:#66CCFF; color:white"><div class="number-table">(.*)<\/div> \(<strong>(.*)%<\/strong> of currently infected\)<\/td>/i', $html, $m)) {
+			$data['mild'] = [
+				'count' => (int)str_replace(',', '', $m[1]),
+				'percent' => (int)str_replace(',', '', $m[2])
+			];
 		} else {
-			$data['recovered'] = -1;
+			$data['mild'] = [
+				'count' => 0,
+				'percent' => 0
+			];
+		}
+
+		if(preg_match('/<tr> <td style="background-color:#FF9900; color:white"><div class="number-table">(.*)<\/div> \(<strong>(.*)%<\/strong> of currently infected\) <\/td> <\/tr>/i', $html, $m)) {
+			$data['critical'] = [
+				'count' => (int)str_replace(',', '', $m[1]),
+				'percent' => (int)str_replace(',', '', $m[2])
+			];
+		} else {
+			$data['critical'] = [
+				'count' => 0,
+				'percent' => 0
+			];
+		}
+
+		if(preg_match('/<td style="background-color:black; color:white "><div class="number-table">(.*)<\/div> \(<strong>(.*)%<\/strong> of cases with outcome\) <\/td>/i', $html, $m)) {
+			$data['death'] = [
+				'count' => (int)str_replace(',', '', $m[1]),
+				'percent' => (int)str_replace(',', '', $m[2])
+			];
+		} else {
+			$data['death'] = [
+				'count' => 0,
+				'percent' => 0
+			];
+		}
+
+		if(preg_match('/<td style="background-color:#8ACA2B; color:white"><div class="number-table">(.*)<\/div> \(<strong>(.*)%<\/strong> of cases with outcome\) <\/td>/i', $html, $m)) {
+			$data['recovered'] = [
+				'count' => (int)str_replace(',', '', $m[1]),
+				'percent' => (int)str_replace(',', '', $m[2])
+			];
+		} else {
+			$data['recovered'] = [
+				'count' => 0,
+				'percent' => 0
+			];
 		}
 
 		return $data;
