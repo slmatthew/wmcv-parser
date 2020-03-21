@@ -4,28 +4,25 @@ class WmParser {
 	public function getCases() {
 		$data = [];
 
-		$html = file_get_contents('https://www.worldometers.info/coronavirus/');
-		if(preg_match('/<div class="maincounter-number"> <span style="color:#aaa">(.*)<\/span><\/div>/i', $html, $m)) {
-			$count = str_replace(',', '', $m[1]);
+		$html = file_get_contents('https://www.worldometers.info/coronavirus/coronavirus-cases/');
 
-			$data['total'] = (int)$count;
-		} else {
-			$data['total'] = 0;
-		}
+		$data['total'] = 0;
 
-		if(preg_match('/<div class="panel_flip"> <div class="panel_front" style="width:100%;height:100%;"> <div class="number-table-main">(.*)<\/div> <div style="font-size:13.5px">Currently Infected Patients<\/div>/i', $html, $m)) {
+		if(preg_match('/<tr> <td><strong>Currently Infected<\/strong> <br><\/td> <\/tr> <tr> <td> <div class="number-table">(.*)<\/div> <\/td> <\/tr> <tr> <td>Mild Condition <\/td>/i', $html, $m)) {
 			$data['currently'] = (int)str_replace(',', '', $m[1]);
 		} else {
 			$data['currently'] = 0;
 		}
 
-		if(preg_match('/<div class="panel panel-default"> <div class="panel-heading" style="text-align:center;"> <span class="panel-title" style="font-size:18px; text-transform:uppercase; font-weight:100"> Closed Cases<\/span><\/div> <div class="panel-body" style="text-align:center;height:200px;"> <div class="panel_flip"> <div class="panel_front" style="width:100%;height:100%;"> <div class="number-table-main">(.*)<\/div> <div style="font-size:13.5px">Cases which had an outcome:<\/div>/i', $html, $m)) {
+		if(preg_match('/<tr> <td><strong>Cases with Outcome<\/strong><\/td> <\/tr> <tr> <td> <div class="number-table">(.*)<\/div> <\/td> <\/tr> <tr> <td>Recovered\/Discharged<\/td>/i', $html, $m)) {
 			$data['outcome'] = (int)str_replace(',', '', $m[1]);
 		} else {
 			$data['outcome'] = 0;
 		}
 
-		if(preg_match('/<span class="number-table" style="color:#8080FF">(.*)<\/span> \(<strong>(.*)<\/strong>%\) <div style="font-size:13px">in Mild Condition<\/div>/i', $html, $m)) {
+		$data['total'] = $data['currently'] + $data['outcome'];
+
+		if(preg_match('/<tr> <td>Mild Condition <\/td> <\/tr> <tr> <td> <div class="number-table">(.*)<\/div> \((.*)%\) <\/td> <\/tr> <tr> <td>Serious or Critical <\/td>/i', $html, $m)) {
 			$data['mild'] = [
 				'count' => (int)str_replace(',', '', $m[1]),
 				'percent' => (int)str_replace(',', '', $m[2])
@@ -37,7 +34,7 @@ class WmParser {
 			];
 		}
 
-		if(preg_match('/<span class="number-table" style="color:red ">(.*)<\/span> \(<strong>(.*)<\/strong>%\) <div style="font-size:13px">Serious or Critical<\/div>/i', $html, $m)) {
+		if(preg_match('/<tr> <td>Serious or Critical <\/td> <\/tr> <tr> <td> <div class="number-table">(.*)<\/div> \((.*)%\) <\/td> <\/tr> <\/table> <\/div> <\/div> <div class="col-md-6">/i', $html, $m)) {
 			$data['critical'] = [
 				'count' => (int)str_replace(',', '', $m[1]),
 				'percent' => (int)str_replace(',', '', $m[2])
@@ -49,7 +46,7 @@ class WmParser {
 			];
 		}
 
-		if(preg_match('/<div style="float:right; text-align:center"><span class="number-table"> (.*)<\/span> \(<strong>(.*)<\/strong>%\) <div style="font-size:13px">Deaths<\/div><br> <\/div>/i', $html, $m)) {
+		if(preg_match('/<tr> <td>Deaths<\/td> <\/tr> <tr> <td> <div class="number-table">(.*)<\/div> \((.*)%\) <\/td> <\/tr> <\/table>/i', $html, $m)) {
 			$data['death'] = [
 				'count' => (int)str_replace(',', '', $m[1]),
 				'percent' => (int)str_replace(',', '', $m[2])
@@ -61,7 +58,7 @@ class WmParser {
 			];
 		}
 
-		if(preg_match('/<div style="float:left; text-align:center"> <span class="number-table" style="color:#8ACA2B">(.*)<\/span> \(<strong>(.*)<\/strong>%\) <div style="font-size:13px">Recovered \/ Discharged<\/div><br> <\/div>/i', $html, $m)) {
+		if(preg_match('/<tr> <td>Recovered\/Discharged<\/td> <\/tr> <tr> <td> <div class="number-table">(.*)<\/div> \((.*)%\) <\/td> <\/tr> <tr> <td>Deaths<\/td>/i', $html, $m)) {
 			$data['recovered'] = [
 				'count' => (int)str_replace(',', '', $m[1]),
 				'percent' => (int)str_replace(',', '', $m[2])
