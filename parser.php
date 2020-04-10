@@ -8,13 +8,13 @@ class WmParser {
 
 		$data['total'] = 0;
 
-		if(preg_match('/<tr> <td><strong>Currently Infected<\/strong> <br><\/td> <\/tr> <tr> <td> <div class="number-table">(.*)<\/div> <\/td> <\/tr> <tr> <td>Mild Condition <\/td>/i', $html, $m)) {
+		if(preg_match('/<tr><td><strong>Currently Infected<\/strong> <br><\/td><\/tr><tr><td><div class="number-table">(.*)<\/div><\/td><\/tr><tr><td>Mild Condition <\/td>/i', $html, $m)) {
 			$data['currently'] = (int)str_replace(',', '', $m[1]);
 		} else {
 			$data['currently'] = 0;
 		}
 
-		if(preg_match('/<tr> <td><strong>Cases with Outcome<\/strong><\/td> <\/tr> <tr> <td> <div class="number-table">(.*)<\/div> <\/td> <\/tr> <tr> <td>Recovered\/Discharged<\/td>/i', $html, $m)) {
+		if(preg_match('/<tr><td><strong>Cases with Outcome<\/strong><\/td><\/tr><tr><td><div class="number-table">(.*)<\/div><\/td><\/tr>/i', $html, $m)) {
 			$data['outcome'] = (int)str_replace(',', '', $m[1]);
 		} else {
 			$data['outcome'] = 0;
@@ -22,7 +22,7 @@ class WmParser {
 
 		$data['total'] = $data['currently'] + $data['outcome'];
 
-		if(preg_match('/<tr> <td>Mild Condition <\/td> <\/tr> <tr> <td> <div class="number-table">(.*)<\/div> \((.*)%\) <\/td> <\/tr> <tr> <td>Serious or Critical <\/td>/i', $html, $m)) {
+		if(preg_match('/<tr><td>Mild Condition <\/td><\/tr><tr><td><div class="number-table">(.*)<\/div>\((\d+)%\)<\/td><\/tr><tr><td>Serious or Critical <\/td>/i', $html, $m)) {
 			$data['mild'] = [
 				'count' => (int)str_replace(',', '', $m[1]),
 				'percent' => (int)str_replace(',', '', $m[2])
@@ -34,7 +34,7 @@ class WmParser {
 			];
 		}
 
-		if(preg_match('/<tr> <td>Serious or Critical <\/td> <\/tr> <tr> <td> <div class="number-table">(.*)<\/div> \((.*)%\) <\/td> <\/tr> <\/table> <\/div> <\/div> <div class="col-md-6">/i', $html, $m)) {
+		if(preg_match('/<tr><td>Serious or Critical <\/td><\/tr><tr><td><div class="number-table">(.*)<\/div>\((\d+)%\)<\/td><\/tr><\/table><\/div><\/div>/i', $html, $m)) {
 			$data['critical'] = [
 				'count' => (int)str_replace(',', '', $m[1]),
 				'percent' => (int)str_replace(',', '', $m[2])
@@ -46,7 +46,7 @@ class WmParser {
 			];
 		}
 
-		if(preg_match('/<tr> <td>Deaths<\/td> <\/tr> <tr> <td> <div class="number-table">(.*)<\/div> \((.*)%\) <\/td> <\/tr> <\/table>/i', $html, $m)) {
+		if(preg_match('/<tr><td>Deaths<\/td><\/tr><tr><td><div class="number-table">(.*)<\/div> \((\d+)%\)<\/td><\/tr><\/table><\/div><\/div><\/div>/i', $html, $m)) {
 			$data['death'] = [
 				'count' => (int)str_replace(',', '', $m[1]),
 				'percent' => (int)str_replace(',', '', $m[2])
@@ -58,7 +58,7 @@ class WmParser {
 			];
 		}
 
-		if(preg_match('/<tr> <td>Recovered\/Discharged<\/td> <\/tr> <tr> <td> <div class="number-table">(.*)<\/div> \((.*)%\) <\/td> <\/tr> <tr> <td>Deaths<\/td>/i', $html, $m)) {
+		if(preg_match('/<\/div><\/td><\/tr><tr><td>Recovered\/Discharged<\/td><\/tr><tr><td><div class="number-table">(.*)<\/div> \((\d+)%\)<\/td><\/tr><tr><td>Deaths<\/td><\/tr>/i', $html, $m)) {
 			$data['recovered'] = [
 				'count' => (int)str_replace(',', '', $m[1]),
 				'percent' => (int)str_replace(',', '', $m[2])
